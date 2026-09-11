@@ -296,6 +296,26 @@ footer{
   padding:10px 18px;border-radius:99px;opacity:0;transition:.3s;z-index:90;pointer-events:none;
 }
 .toast.show{opacity:1;transform:translateX(-50%);}
+/* BGM 碟片按钮 */
+#discBtn{
+  position:fixed;top:12px;right:14px;z-index:60;
+  width:36px;height:36px;border-radius:50%;
+  background:radial-gradient(circle at center,#fff 28%,var(--blue-d) 30%,var(--ink) 100%);
+  border:2px solid rgba(255,255,255,.85);
+  box-shadow:0 3px 10px rgba(44,58,74,.25);
+  cursor:pointer;display:none;
+  animation:spin 3.2s linear infinite;
+  animation-play-state:paused;
+}
+#discBtn.playing{animation-play-state:running;}
+#discBtn.ready{display:block;}
+#discBtn::after{
+  content:"♪";position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;
+}
+#discBtn:not(.playing){opacity:.6;}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -464,6 +484,9 @@ footer{
 
 <div class="toast" id="toast">地址已复制</div>
 
+<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+<button id="discBtn" aria-label="背景音乐开关"></button>
+
 <script>
 /* ====== 配置区:后续只改这里 ====== */
 var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机签到表
@@ -518,10 +541,33 @@ var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机�
     hudIdx.textContent = '01 / ' + pad(scenes.length);
   }
 
+  /* ---------- 背景音乐 ---------- */
+  var bgm = document.getElementById('bgm');
+  var disc = document.getElementById('discBtn');
+  var bgmOK = false, userPaused = false;
+  bgm.addEventListener('canplaythrough', function(){ if(!bgmOK){ bgmOK = true; disc.classList.add('ready'); } });
+  bgm.addEventListener('error', function(){ bgmOK = false; disc.classList.remove('ready'); });
+  function tryPlay(){
+    if(!bgmOK || userPaused) return;
+    bgm.play().then(function(){ disc.classList.add('playing'); }).catch(function(){});
+  }
+  bgm.addEventListener('play', function(){ disc.classList.add('playing'); });
+  bgm.addEventListener('pause', function(){ disc.classList.remove('playing'); });
+  disc.addEventListener('click', function(e){
+    e.stopPropagation();
+    if(bgm.paused){ userPaused = false; bgm.play().catch(function(){}); }
+    else { userPaused = true; bgm.pause(); }
+  });
+  /* 首次任意触碰即尝试起播(浏览器要求用户交互后才允许出声) */
+  function firstTouch(){ tryPlay(); document.removeEventListener('touchstart', firstTouch); document.removeEventListener('mousedown', firstTouch); }
+  document.addEventListener('touchstart', firstTouch, {passive:true});
+  document.addEventListener('mousedown', firstTouch);
+
   /* ---------- 撕票 ---------- */
   function openInvite(){
     if(torn) return;
     torn = true;
+    tryPlay();
     stub.classList.add('tearing');
     stub.style.transform = 'translateX(130%) rotate(24deg)';
     stub.style.opacity = '0';
