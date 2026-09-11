@@ -298,7 +298,7 @@ footer{
 .toast.show{opacity:1;transform:translateX(-50%);}
 /* BGM 碟片按钮 */
 #discBtn{
-  position:fixed;top:12px;right:14px;z-index:60;
+  position:fixed;top:10px;left:calc(50% - 18px);z-index:60;
   width:36px;height:36px;border-radius:50%;
   background:radial-gradient(circle at center,#fff 28%,var(--blue-d) 30%,var(--ink) 100%);
   border:2px solid rgba(255,255,255,.85);
@@ -484,7 +484,7 @@ footer{
 
 <div class="toast" id="toast">地址已复制</div>
 
-<audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+<audio id="bgm" src="bgm.mp3" loop autoplay preload="auto"></audio>
 <button id="discBtn" aria-label="背景音乐开关"></button>
 
 <script>
@@ -590,6 +590,13 @@ var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机�
   else{
     document.addEventListener('WeixinJSBridgeReady', wxKick, false);
   }
+  /* 进页立即试一次,随后每0.7秒补试(共9次),响了或用户主动关了就停 */
+  wxKick();
+  var kickN = 0;
+  var kickTimer = setInterval(function(){
+    if(!bgm.paused || userPaused || bgmDead || ++kickN > 9){ clearInterval(kickTimer); return; }
+    wxKick();
+  }, 700);
 
   /* ---------- 撕票 ---------- */
   function openInvite(){
