@@ -22,7 +22,7 @@ body{
   color:var(--ink);
   background:linear-gradient(170deg,#dfe8f0 0%,#eef3f7 45%,#e2eaf1 100%);
   min-height:100%;
-  overflow-x:hidden;
+  overflow:hidden;
 }
 .mono{font-family:"Courier New",ui-monospace,Menlo,monospace;letter-spacing:.08em;}
 
@@ -45,7 +45,7 @@ body{
   padding:22px 22px 18px;
   position:relative;overflow:hidden;
 }
-.pass-top::before{ /* 顶部雾蓝色带 */
+.pass-top::before{
   content:"";position:absolute;top:0;left:0;right:0;height:52px;
   background:linear-gradient(90deg,var(--blue-d),var(--blue));
 }
@@ -55,10 +55,7 @@ body{
 }
 .airline-row .name{font-size:13px;font-weight:600;letter-spacing:.18em;}
 .airline-row .cls{font-size:11px;letter-spacing:.2em;opacity:.85;}
-.route{
-  display:flex;align-items:center;justify-content:space-between;
-  margin:6px 0 4px;
-}
+.route{display:flex;align-items:center;justify-content:space-between;margin:6px 0 4px;}
 .route .code{font-size:34px;font-weight:700;letter-spacing:.02em;}
 .route .city{font-size:11.5px;color:var(--soft);margin-top:2px;letter-spacing:.14em;}
 .route .plane{color:var(--blue);font-size:20px;flex:1;text-align:center;position:relative;}
@@ -78,22 +75,14 @@ body{
 }
 .grid .cell .k{font-size:10px;color:var(--soft);letter-spacing:.16em;margin-bottom:3px;}
 .grid .cell .v{font-size:14.5px;font-weight:600;}
-.notice-sm{
-  margin-top:14px;font-size:10.5px;color:#a9b6c2;text-align:center;letter-spacing:.1em;
-}
-/* 锯齿撕票线 */
-.perf{
-  height:0;position:relative;
-  border-top:2px dashed #b9c7d4;
-  background:var(--paper);
-}
+.notice-sm{margin-top:14px;font-size:10.5px;color:#a9b6c2;text-align:center;letter-spacing:.1em;}
+.perf{height:0;position:relative;border-top:2px dashed #b9c7d4;background:var(--paper);}
 .perf::before,.perf::after{
   content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;
   background:radial-gradient(circle at center,rgba(44,58,74,.10),rgba(44,58,74,.04) 60%,transparent 62%),linear-gradient(170deg,#dfe8f0,#e8eff5);
 }
 .perf::before{left:-11px;}
 .perf::after{right:-11px;}
-/* 票根 */
 .stub{
   background:var(--paper);
   border-radius:0 0 16px 16px;
@@ -126,28 +115,40 @@ body{
 }
 #altOpen.show{opacity:1;}
 
-/* ---------- 第二幕:请帖正文 ---------- */
-#scene-invite{
-  max-width:430px;margin:0 auto;padding:34px 18px 60px;
-  opacity:0;transform:translateY(20px);
-  transition:opacity .8s ease .25s,transform .8s ease .25s;
+/* ---------- 分幕舞台 ---------- */
+#stage{position:fixed;inset:0;z-index:10;display:none;}
+#stage.on{display:block;}
+/* 机舱抬头信息 */
+.hud{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px 10px;
+  font-size:11px;color:var(--blue-d);letter-spacing:.18em;
+  pointer-events:none;
 }
-#scene-invite.show{opacity:1;transform:none;}
+.scene{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:56px 18px 84px;
+  overflow-y:auto;
+  opacity:0;transform:translateX(9vw);
+  transition:opacity .55s ease,transform .55s ease;
+  pointer-events:none;
+  cursor:pointer;
+}
+.scene.cur{opacity:1;transform:none;pointer-events:auto;}
+.scene.bye{opacity:0;transform:translateX(-9vw);}
+.scene-inner{width:100%;max-width:430px;margin:auto;cursor:auto;}
 .card{
   background:var(--paper);border-radius:14px;
   box-shadow:0 8px 26px rgba(44,58,74,.10);
-  padding:24px 22px;margin-bottom:20px;
+  padding:24px 22px;
 }
-.eyebrow{
-  font-size:11px;color:var(--blue);letter-spacing:.22em;margin-bottom:10px;
-}
+.eyebrow{font-size:11px;color:var(--blue);letter-spacing:.22em;margin-bottom:10px;}
 h2.big{font-size:21px;font-weight:700;letter-spacing:.04em;line-height:1.5;}
 .notice p{font-size:14.5px;line-height:1.9;color:#4a5a6a;margin-top:12px;}
 .notice p b{color:var(--ink);}
-.count{
-  display:flex;align-items:baseline;justify-content:center;gap:10px;
-  padding:6px 0 2px;
-}
+.count{display:flex;align-items:baseline;justify-content:center;gap:10px;padding:6px 0 2px;}
 .count .n{font-size:44px;font-weight:700;color:var(--blue-d);}
 .count .t{font-size:13px;color:var(--soft);letter-spacing:.1em;}
 /* 航线图 */
@@ -166,21 +167,44 @@ h2.big{font-size:21px;font-weight:700;letter-spacing:.04em;line-height:1.5;}
 .wp .d{font-size:12px;color:var(--blue);letter-spacing:.12em;margin-bottom:3px;}
 .wp .txt{font-size:14.5px;line-height:1.7;}
 .wp:last-child .txt{font-weight:700;}
-/* 照片 */
-.photos{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none;}
-.photos::-webkit-scrollbar{display:none;}
+/* 照片墙 */
+.photogrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
 .polaroid{
-  flex:0 0 150px;background:#fff;border-radius:4px;
-  box-shadow:0 4px 14px rgba(44,58,74,.14);
-  padding:8px 8px 26px;transform:rotate(-2deg);
+  background:#fff;border-radius:4px;
+  box-shadow:0 4px 14px rgba(44,58,74,.16);
+  padding:7px 7px 20px;transform:rotate(-1.8deg);
+  cursor:pointer;transition:transform .18s ease;
 }
 .polaroid:nth-child(2){transform:rotate(1.6deg);}
-.polaroid:nth-child(3){transform:rotate(-1deg);}
-.polaroid .ph{
-  height:150px;border-radius:2px;
+.polaroid:nth-child(3){transform:rotate(1.2deg);}
+.polaroid:nth-child(4){transform:rotate(-1.4deg);}
+.polaroid:active{transform:scale(.97);}
+.polaroid img{
+  display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:2px;
   background:linear-gradient(145deg,#dce6ee,#eef3f7);
-  display:flex;align-items:center;justify-content:center;
-  color:var(--soft);font-size:12px;letter-spacing:.1em;text-align:center;line-height:1.6;
+}
+.photo-cap{margin-top:10px;text-align:center;font-size:12px;color:var(--soft);letter-spacing:.08em;}
+/* 灯箱 */
+#lightbox{
+  position:fixed;inset:0;z-index:95;background:#141c26;
+  display:none;align-items:center;justify-content:center;
+}
+#lightbox.show{display:flex;}
+#lightbox img{max-width:100vw;max-height:100vh;object-fit:contain;}
+#lightbox .lb-close{
+  position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.14);color:#fff;border:none;font-size:18px;cursor:pointer;
+}
+#lightbox .lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:42px;height:64px;border:none;border-radius:8px;
+  background:rgba(255,255,255,.10);color:#fff;font-size:24px;cursor:pointer;
+}
+#lightbox .lb-prev{left:8px;}
+#lightbox .lb-next{right:8px;}
+#lightbox .lb-idx{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,.75);font-size:12px;letter-spacing:.2em;
 }
 /* 行李牌 */
 .tagcard{border:2px solid var(--blue);position:relative;}
@@ -201,10 +225,6 @@ h2.big{font-size:21px;font-weight:700;letter-spacing:.04em;line-height:1.5;}
 .btn.solid{background:var(--blue-d);color:#fff;}
 .btn.ghost{background:#fff;color:var(--blue-d);}
 .btn:active{transform:translateY(1px);}
-/* 彩蛋 */
-.egg{text-align:center;}
-.egg img{width:150px;height:150px;margin:12px auto 6px;display:block;}
-.egg .cap{font-size:12.5px;color:var(--soft);letter-spacing:.06em;}
 /* RSVP 弹层 */
 #rsvpMask{
   position:fixed;inset:0;background:rgba(44,58,74,.45);z-index:80;
@@ -224,9 +244,30 @@ h2.big{font-size:21px;font-weight:700;letter-spacing:.04em;line-height:1.5;}
   background:var(--blue-d);color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;
 }
 footer{
-  text-align:center;padding:8px 0 30px;
+  text-align:center;padding:22px 0 4px;
   font-size:11px;color:#a4b1bd;letter-spacing:.18em;
 }
+/* 底部推进条 */
+.deck{
+  position:fixed;left:0;right:0;bottom:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px 22px;
+  pointer-events:none;
+}
+.deck .back{
+  pointer-events:auto;border:none;background:none;color:var(--soft);
+  font-size:12.5px;letter-spacing:.08em;cursor:pointer;font-family:inherit;
+  padding:8px 6px;visibility:hidden;
+}
+.deck .back.show{visibility:visible;}
+.deck .next{
+  display:flex;align-items:center;gap:7px;
+  font-size:13px;color:var(--blue-d);letter-spacing:.08em;
+}
+.deck .next .arr{animation:nudge 1.4s ease-in-out infinite;}
+.deck .dots{display:flex;gap:7px;}
+.deck .dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:.3s;}
+.deck .dots i.on{background:var(--blue-d);width:18px;border-radius:99px;}
 .toast{
   position:fixed;left:50%;bottom:70px;transform:translateX(-50%) translateY(20px);
   background:rgba(44,58,74,.92);color:#fff;font-size:13px;
@@ -237,7 +278,7 @@ footer{
 </head>
 <body>
 
-<!-- 第一幕:登机牌 -->
+<!-- 序幕:登机牌撕票 -->
 <div id="scene-pass">
   <div class="pass" id="passCard">
     <div class="pass-top">
@@ -279,72 +320,103 @@ footer{
   </div>
 </div>
 
-<!-- 第二幕:请帖正文 -->
-<div id="scene-invite">
-  <div class="card notice">
-    <div class="eyebrow mono">FLIGHT ANNOUNCEMENT · 航行通告</div>
-    <h2 class="big">各位旅客请注意:</h2>
-    <p>由 <b>蔡炀庆</b> 与 <b>刘默涵</b> 共同执飞的 <b>LA0602</b> 婚姻号航班,将于 <b>2026年10月11日 17:30</b> 准时起飞。</p>
-    <p>本次航程自"单身"飞往"余生",全程无经停、不返航。现诚挚邀请您登机,见证我们的首飞。</p>
-    <div class="count" id="countWrap">
-      <span class="n" id="countN">--</span><span class="t">天后登机 · 请提前抵达</span>
-    </div>
-  </div>
+<!-- 舞台:四幕 -->
+<div id="stage">
+  <div class="hud mono"><span>LOVE AIR · LA0602</span><span id="hudIdx">01 / 04</span></div>
 
-  <div class="card">
-    <div class="eyebrow mono">FLIGHT ROUTE · 我们的航线</div>
-    <div class="airline-map" style="margin-top:14px">
-      <div class="wp">
-        <div class="d mono">2026.01</div>
-        <div class="txt">办公室里成为同桌,缘分自动值机。</div>
-      </div>
-      <div class="wp">
-        <div class="d mono">2026.06.02</div>
-        <div class="txt">正式在一起,机票即日生效。</div>
-      </div>
-      <div class="wp">
-        <div class="d mono">2026.10.11</div>
-        <div class="txt">双人航班正式首飞 —— 我们结婚啦!</div>
+  <!-- 第1幕:航行通告 -->
+  <section class="scene" data-i="0">
+    <div class="scene-inner">
+      <div class="card notice">
+        <div class="eyebrow mono">FLIGHT ANNOUNCEMENT · 航行通告</div>
+        <h2 class="big">各位旅客请注意:</h2>
+        <p>由 <b>蔡炀庆</b> 与 <b>刘默涵</b> 共同执飞的 <b>LA0602</b> 婚姻号航班,将于 <b>2026年10月11日 17:30</b> 准时起飞。</p>
+        <p>本次航程自"单身"飞往"余生",全程无经停、不返航。现诚挚邀请您登机,见证我们的首飞。</p>
+        <div class="count" id="countWrap">
+          <span class="n" id="countN">--</span><span class="t">天后登机 · 请提前抵达</span>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card">
-    <div class="eyebrow mono">WINDOW VIEW · 沿途风景</div>
-    <div class="photos" style="margin-top:12px">
-      <div class="polaroid"><div class="ph">照片位 ①<br>后续替换</div></div>
-      <div class="polaroid"><div class="ph">照片位 ②<br>后续替换</div></div>
-      <div class="polaroid"><div class="ph">照片位 ③<br>后续替换</div></div>
+  <!-- 第2幕:航线 -->
+  <section class="scene" data-i="1">
+    <div class="scene-inner">
+      <div class="card">
+        <div class="eyebrow mono">FLIGHT ROUTE · 我们的航线</div>
+        <div class="airline-map" style="margin-top:14px">
+          <div class="wp">
+            <div class="d mono">2026.01</div>
+            <div class="txt">办公室里成为同桌,缘分自动值机。</div>
+          </div>
+          <div class="wp">
+            <div class="d mono">2026.06.02</div>
+            <div class="txt">正式在一起,机票即日生效。</div>
+          </div>
+          <div class="wp">
+            <div class="d mono">2026.10.11</div>
+            <div class="txt">双人航班正式首飞 —— 我们结婚啦!</div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card tagcard">
-    <div class="eyebrow mono">BAGGAGE TAG · 登机信息</div>
-    <div class="info-row"><div class="ic">🕠</div><div><b>2026年10月11日(周日)17:30</b><br>婚礼晚宴 · 恕不延误</div></div>
-    <div class="info-row"><div class="ic">🏨</div><div><b>莆田市皇冠假日酒店 · 101厅</b></div></div>
-    <div class="info-row"><div class="ic">📍</div><div id="addrText">福建省莆田市荔城区镇海街道荔浦路85号</div></div>
-    <div class="btns">
-      <a class="btn solid" id="navBtn" target="_blank" rel="noopener"
-         href="https://uri.amap.com/search?keyword=%E8%8E%86%E7%94%B0%E5%B8%82%E7%9A%87%E5%86%A0%E5%81%87%E6%97%A5%E9%85%92%E5%BA%97&city=%E8%8E%86%E7%94%B0">导航前往</a>
-      <button class="btn ghost" id="copyAddr">复制地址</button>
+  <!-- 第3幕:照片 -->
+  <section class="scene" data-i="2">
+    <div class="scene-inner">
+      <div class="card">
+        <div class="eyebrow mono">WINDOW VIEW · 沿途风景</div>
+        <div class="photogrid">
+          <div class="polaroid" data-p="0"><img src="photo1.jpg" alt="婚纱照 1" loading="lazy"></div>
+          <div class="polaroid" data-p="1"><img src="photo2.jpg" alt="婚纱照 2" loading="lazy"></div>
+          <div class="polaroid" data-p="2"><img src="photo3.jpg" alt="婚纱照 3" loading="lazy"></div>
+          <div class="polaroid" data-p="3"><img src="photo4.jpg" alt="婚纱照 4" loading="lazy"></div>
+        </div>
+        <div class="photo-cap">轻触照片可查看大图</div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div class="card egg">
-    <div class="eyebrow mono">HIDDEN CARGO · 机上彩蛋</div>
-    <img alt="彩蛋二维码" src="data:image/png;base64,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">
-    <div class="cap">用微信"扫一扫"识别,解锁一条机长广播</div>
-  </div>
+  <!-- 第4幕:登机信息 + 值机 -->
+  <section class="scene" data-i="3">
+    <div class="scene-inner">
+      <div class="card tagcard">
+        <div class="eyebrow mono">BAGGAGE TAG · 登机信息</div>
+        <div class="info-row"><div class="ic">🕠</div><div><b>2026年10月11日(周日)17:30</b><br>婚礼晚宴 · 恕不延误</div></div>
+        <div class="info-row"><div class="ic">🏨</div><div><b>莆田市皇冠假日酒店 · 101厅</b></div></div>
+        <div class="info-row"><div class="ic">📍</div><div id="addrText">福建省莆田市荔城区镇海街道荔浦路85号</div></div>
+        <div class="btns">
+          <a class="btn solid" id="navBtn" target="_blank" rel="noopener"
+             href="https://uri.amap.com/search?keyword=%E8%8E%86%E7%94%B0%E5%B8%82%E7%9A%87%E5%86%A0%E5%81%87%E6%97%A5%E9%85%92%E5%BA%97&city=%E8%8E%86%E7%94%B0">导航前往</a>
+          <button class="btn ghost" id="copyAddr">复制地址</button>
+        </div>
+      </div>
+      <div class="card" style="text-align:center;margin-top:18px">
+        <div class="eyebrow mono">CHECK-IN · 值机确认</div>
+        <p style="font-size:14.5px;color:#4a5a6a;line-height:1.8;margin:10px 0 18px">
+          为了给您留好座位和餐食,<br>请提前告知我们您是否登机。
+        </p>
+        <button class="btn solid" id="rsvpBtn" style="width:100%">值机确认 ✈ 这顿饭我吃定了</button>
+      </div>
+      <footer class="mono">LA0602 · NO REFUNDS · NO RETURNS<br>SEE YOU ON BOARD</footer>
+    </div>
+  </section>
 
-  <div class="card" style="text-align:center">
-    <div class="eyebrow mono">CHECK-IN · 值机确认</div>
-    <p style="font-size:14.5px;color:#4a5a6a;line-height:1.8;margin:10px 0 18px">
-      为了给您留好座位和餐食,<br>请提前告知我们您是否登机。
-    </p>
-    <button class="btn solid" id="rsvpBtn" style="width:100%">值机确认 ✈ 这顿饭我吃定了</button>
+  <div class="deck">
+    <button class="back" id="backBtn">‹ 上一幕</button>
+    <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>
+    <div class="next" id="nextHint">轻触屏幕 继续飞行 <span class="arr">→</span></div>
   </div>
+</div>
 
-  <footer class="mono">LA0602 · NO REFUNDS · NO RETURNS<br>SEE YOU ON BOARD</footer>
+<!-- 照片灯箱 -->
+<div id="lightbox">
+  <img id="lbImg" src="" alt="婚纱照大图">
+  <button class="lb-nav lb-prev" id="lbPrev">‹</button>
+  <button class="lb-nav lb-next" id="lbNext">›</button>
+  <button class="lb-close" id="lbClose">✕</button>
+  <div class="lb-idx mono" id="lbIdx">1 / 4</div>
 </div>
 
 <!-- RSVP 弹层(未配置统计链接时的兜底) -->
@@ -366,12 +438,54 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
 
 (function(){
   var stub = document.getElementById('stub');
-  var pass = document.getElementById('passCard');
   var scenePass = document.getElementById('scene-pass');
-  var sceneInvite = document.getElementById('scene-invite');
+  var stage = document.getElementById('stage');
   var alt = document.getElementById('altOpen');
   var torn = false;
 
+  /* ---------- 分幕控制 ---------- */
+  var scenes = [].slice.call(document.querySelectorAll('.scene'));
+  var dots = [].slice.call(document.querySelectorAll('#dots i'));
+  var hudIdx = document.getElementById('hudIdx');
+  var backBtn = document.getElementById('backBtn');
+  var nextHint = document.getElementById('nextHint');
+  var cur = 0, moving = false;
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function goto(i){
+    if(moving || i<0 || i>=scenes.length || i===cur && stage.classList.contains('on')) return;
+    moving = true;
+    var old = scenes[cur];
+    old.classList.remove('cur'); old.classList.add('bye');
+    cur = i;
+    scenes[cur].classList.add('cur'); scenes[cur].classList.remove('bye');
+    scenes[cur].scrollTop = 0;
+    dots.forEach(function(d,k){ d.classList.toggle('on', k===cur); });
+    hudIdx.textContent = pad(cur+1) + ' / ' + pad(scenes.length);
+    backBtn.classList.toggle('show', cur>0);
+    nextHint.style.visibility = (cur === scenes.length-1) ? 'hidden' : 'visible';
+    setTimeout(function(){ old.classList.remove('bye'); moving = false; }, 580);
+  }
+  function next(){ if(cur < scenes.length-1) goto(cur+1); }
+  function prev(){ if(cur > 0) goto(cur-1); }
+
+  /* 点击场景任意空白处推进;交互元素不触发 */
+  scenes.forEach(function(sc){
+    sc.addEventListener('click', function(e){
+      if(e.target.closest('a,button,.polaroid,input,textarea')) return;
+      next();
+    });
+  });
+  backBtn.addEventListener('click', prev);
+
+  function openStage(){
+    stage.classList.add('on');
+    scenes[0].classList.add('cur');
+    backBtn.classList.remove('show');
+    hudIdx.textContent = '01 / ' + pad(scenes.length);
+  }
+
+  /* ---------- 撕票 ---------- */
   function openInvite(){
     if(torn) return;
     torn = true;
@@ -380,13 +494,11 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
     stub.style.opacity = '0';
     setTimeout(function(){
       scenePass.classList.add('gone');
-      sceneInvite.classList.add('show');
-      document.body.style.overflowY = 'auto';
+      openStage();
       setTimeout(function(){ scenePass.style.display='none'; }, 750);
     }, 420);
   }
 
-  /* 拖拽撕票:触摸 + 鼠标 */
   var startX = null, dragging = false;
   function px(e){ return (e.touches ? e.touches[0].clientX : e.clientX); }
   function down(e){ if(torn) return; dragging = true; startX = px(e); stub.style.transition='none'; }
@@ -410,13 +522,10 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
   window.addEventListener('mousemove', move);
   window.addEventListener('mouseup', up);
 
-  /* 兜底入口:4秒后出现 */
   setTimeout(function(){ alt.classList.add('show'); }, 4000);
   alt.addEventListener('click', openInvite);
-  /* 首屏禁止滚动,撕开后恢复 */
-  document.body.style.overflowY = 'hidden';
 
-  /* 倒计时 */
+  /* ---------- 倒计时 ---------- */
   var target = new Date('2026-10-11T17:30:00+08:00').getTime();
   var days = Math.max(0, Math.ceil((target - Date.now()) / 86400000));
   document.getElementById('countN').textContent = days;
@@ -425,7 +534,39 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
     document.getElementById('countN').textContent = '🎉';
   }
 
-  /* 复制地址 */
+  /* ---------- 照片灯箱 ---------- */
+  var photos = ['photo1.jpg','photo2.jpg','photo3.jpg','photo4.jpg'];
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbIdx = document.getElementById('lbIdx');
+  var pi = 0;
+  function showP(i){
+    pi = (i + photos.length) % photos.length;
+    lbImg.src = photos[pi];
+    lbIdx.textContent = (pi+1) + ' / ' + photos.length;
+  }
+  [].slice.call(document.querySelectorAll('.polaroid')).forEach(function(p){
+    p.addEventListener('click', function(e){
+      e.stopPropagation();
+      showP(parseInt(p.getAttribute('data-p'),10));
+      lb.classList.add('show');
+    });
+  });
+  document.getElementById('lbClose').addEventListener('click', function(){ lb.classList.remove('show'); });
+  document.getElementById('lbPrev').addEventListener('click', function(e){ e.stopPropagation(); showP(pi-1); });
+  document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); showP(pi+1); });
+  lb.addEventListener('click', function(e){ if(e.target === lb || e.target === lbImg) lb.classList.remove('show'); });
+  /* 灯箱内左右滑动切换 */
+  var lsx = null;
+  lb.addEventListener('touchstart', function(e){ lsx = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', function(e){
+    if(lsx === null) return;
+    var d = e.changedTouches[0].clientX - lsx;
+    if(Math.abs(d) > 45){ d < 0 ? showP(pi+1) : showP(pi-1); }
+    lsx = null;
+  });
+
+  /* ---------- 复制地址 ---------- */
   var toast = document.getElementById('toast');
   document.getElementById('copyAddr').addEventListener('click', function(){
     var text = document.getElementById('addrText').textContent.trim();
@@ -441,7 +582,7 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
     }
   });
 
-  /* RSVP */
+  /* ---------- RSVP ---------- */
   var mask = document.getElementById('rsvpMask');
   document.getElementById('rsvpBtn').addEventListener('click', function(){
     if(RSVP_URL){ window.open(RSVP_URL, '_blank'); }
