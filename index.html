@@ -135,7 +135,7 @@ body{
 .scene{
   position:fixed;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:56px 18px 84px;
+  padding:70px 18px 88px;
   overflow-y:auto;
   opacity:0;transform:translateX(9vw);
   transition:opacity .55s ease,transform .55s ease;
@@ -149,6 +149,22 @@ body{
   background:var(--paper);border-radius:14px;
   box-shadow:0 8px 26px rgba(44,58,74,.10);
   padding:24px 22px;
+}
+/* 幕顶航徽装饰 */
+.orn{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  color:var(--blue);font-size:15px;margin-bottom:20px;opacity:.8;
+}
+.orn::before,.orn::after{content:"";width:54px;border-top:1px solid var(--line);}
+/* 幕底情话 */
+.verse{
+  margin-top:26px;text-align:center;
+  font-family:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  font-size:14px;color:#66798c;letter-spacing:.14em;line-height:2;
+}
+.verse::after{
+  content:"";display:block;width:26px;margin:16px auto 0;
+  border-top:1px solid var(--line);
 }
 .eyebrow{font-size:11px;color:var(--blue);letter-spacing:.22em;margin-bottom:10px;}
 h2.big{font-size:21px;font-weight:700;letter-spacing:.04em;line-height:1.5;}
@@ -336,6 +352,7 @@ footer{
   <!-- 第1幕:航行通告 -->
   <section class="scene" data-i="0">
     <div class="scene-inner">
+      <div class="orn">✈</div>
       <div class="card notice">
         <div class="eyebrow mono">FLIGHT ANNOUNCEMENT · 航行通告</div>
         <h2 class="big">各位旅客请注意:</h2>
@@ -345,12 +362,14 @@ footer{
           <span class="n" id="countN">--</span><span class="t">天后登机 · 请提前抵达</span>
         </div>
       </div>
+      <div class="verse">凡是过往,皆为序章<br>此后航程,皆是我们</div>
     </div>
   </section>
 
   <!-- 第2幕:航线 -->
   <section class="scene" data-i="1">
     <div class="scene-inner">
+      <div class="orn">✈</div>
       <div class="card">
         <div class="eyebrow mono">FLIGHT ROUTE · 我们的航线</div>
         <div class="airline-map" style="margin-top:14px">
@@ -368,12 +387,14 @@ footer{
           </div>
         </div>
       </div>
+      <div class="verse">从同桌的偶然<br>到余生的必然</div>
     </div>
   </section>
 
   <!-- 第3幕:照片 -->
   <section class="scene" data-i="2">
     <div class="scene-inner">
+      <div class="orn">✈</div>
       <div class="card">
         <div class="eyebrow mono">WINDOW VIEW · 沿途风景</div>
         <div class="photogrid">
@@ -384,12 +405,14 @@ footer{
         </div>
         <div class="photo-cap">轻触照片可查看大图</div>
       </div>
+      <div class="verse">看过云海与晚霞<br>最美仍是回头时的你</div>
     </div>
   </section>
 
   <!-- 第4幕:登机信息 + 值机 -->
   <section class="scene" data-i="3">
     <div class="scene-inner">
+      <div class="orn">✈</div>
       <div class="card tagcard">
         <div class="eyebrow mono">BAGGAGE TAG · 登机信息</div>
         <div class="info-row"><div class="ic">🕠</div><div><b>2026年10月11日(周日)17:30</b><br>婚礼晚宴 · 恕不延误</div></div>
@@ -408,6 +431,7 @@ footer{
         </p>
         <button class="btn solid" id="rsvpBtn" style="width:100%">值机确认 ✈ 这顿饭我吃定了</button>
       </div>
+      <div class="verse">良辰已定,座位已留<br>只待您如约而至</div>
       <footer class="mono">LA0602 · NO REFUNDS · NO RETURNS<br>SEE YOU ON BOARD</footer>
     </div>
   </section>
