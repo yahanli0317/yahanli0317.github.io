@@ -578,6 +578,18 @@ var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机�
   }
   document.addEventListener('touchend', gestureKick, {passive:true});
   document.addEventListener('mousedown', gestureKick);
+  /* 微信专属:通过内置桥接口在进入页面时直接唤起播放 */
+  function wxKick(){
+    try{
+      if(typeof WeixinJSBridge !== 'undefined' && WeixinJSBridge.invoke){
+        WeixinJSBridge.invoke('getNetworkType', {}, function(){ tryPlay(); });
+      } else { tryPlay(); }
+    }catch(e){ tryPlay(); }
+  }
+  if(typeof WeixinJSBridge !== 'undefined'){ wxKick(); }
+  else{
+    document.addEventListener('WeixinJSBridgeReady', wxKick, false);
+  }
 
   /* ---------- 撕票 ---------- */
   function openInvite(){
