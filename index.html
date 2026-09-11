@@ -298,11 +298,11 @@ footer{
 .toast.show{opacity:1;transform:translateX(-50%);}
 /* BGM 碟片按钮 */
 #discBtn{
-  position:fixed;top:10px;left:calc(50% - 18px);z-index:60;
-  width:36px;height:36px;border-radius:50%;
-  background:radial-gradient(circle at center,#fff 28%,var(--blue-d) 30%,var(--ink) 100%);
-  border:2px solid rgba(255,255,255,.85);
-  box-shadow:0 3px 10px rgba(44,58,74,.25);
+  position:fixed;top:10px;left:calc(50% - 19px);z-index:60;
+  width:38px;height:38px;border-radius:50%;
+  background:var(--paper);
+  border:1.5px solid var(--blue-d);
+  box-shadow:0 3px 10px rgba(44,58,74,.20);
   cursor:pointer;display:none;
   animation:spin 3.2s linear infinite;
   animation-play-state:paused;
@@ -312,9 +312,9 @@ footer{
 #discBtn::after{
   content:"♪";position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  color:#fff;font-size:13px;
+  color:var(--blue-d);font-size:19px;font-weight:700;
 }
-#discBtn:not(.playing){opacity:.6;}
+#discBtn:not(.playing){opacity:.55;}
 @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
