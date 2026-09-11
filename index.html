@@ -466,7 +466,7 @@ footer{
 
 <script>
 /* ====== 配置区:后续只改这里 ====== */
-var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
+var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机签到表
 /* ================================ */
 
 (function(){
@@ -618,7 +618,7 @@ var RSVP_URL = "";   // 腾讯问卷RSVP链接,拿到后填进引号内
   /* ---------- RSVP ---------- */
   var mask = document.getElementById('rsvpMask');
   document.getElementById('rsvpBtn').addEventListener('click', function(){
-    if(RSVP_URL){ window.open(RSVP_URL, '_blank'); }
+    if(RSVP_URL){ window.location.href = RSVP_URL; }
     else { mask.classList.add('show'); }
   });
   document.getElementById('rsvpClose').addEventListener('click', function(){ mask.classList.remove('show'); });
