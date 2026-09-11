@@ -544,24 +544,40 @@ var RSVP_URL = "https://wj.qq.com/s2/27851192/re37/";   // 腾讯问卷·登机�
   /* ---------- 背景音乐 ---------- */
   var bgm = document.getElementById('bgm');
   var disc = document.getElementById('discBtn');
-  var bgmOK = false, userPaused = false;
-  bgm.addEventListener('canplaythrough', function(){ if(!bgmOK){ bgmOK = true; disc.classList.add('ready'); } });
-  bgm.addEventListener('error', function(){ bgmOK = false; disc.classList.remove('ready'); });
+  var userPaused = false, bgmDead = false;
+  disc.classList.add('ready');                      /* 默认显示,加载失败才藏 */
+  bgm.addEventListener('error', function(){ bgmDead = true; disc.classList.remove('ready'); });
   function tryPlay(){
-    if(!bgmOK || userPaused) return;
-    bgm.play().then(function(){ disc.classList.add('playing'); }).catch(function(){});
+    if(userPaused || bgmDead) return;
+    var p = bgm.play();
+    if(p && p.catch){
+      p.then(function(){ disc.classList.add('playing'); })
+       .catch(function(err){
+         if(err && (err.name === 'NotSupportedError' || err.name === 'AbortError') && bgm.error){
+           bgmDead = true; disc.classList.remove('ready');
+         }
+         /* NotAllowedError = 还没有用户手势,等下一次触碰再试 */
+       });
+    }
   }
   bgm.addEventListener('play', function(){ disc.classList.add('playing'); });
   bgm.addEventListener('pause', function(){ disc.classList.remove('playing'); });
   disc.addEventListener('click', function(e){
     e.stopPropagation();
-    if(bgm.paused){ userPaused = false; bgm.play().catch(function(){}); }
+    if(bgm.paused){ userPaused = false; tryPlay(); }
     else { userPaused = true; bgm.pause(); }
   });
-  /* 首次任意触碰即尝试起播(浏览器要求用户交互后才允许出声) */
-  function firstTouch(){ tryPlay(); document.removeEventListener('touchstart', firstTouch); document.removeEventListener('mousedown', firstTouch); }
-  document.addEventListener('touchstart', firstTouch, {passive:true});
-  document.addEventListener('mousedown', firstTouch);
+  /* 每次触碰都尝试起播,直到成功出声为止(兼容各家浏览器手势策略) */
+  function gestureKick(){
+    if(!bgm.paused || userPaused || bgmDead){
+      document.removeEventListener('touchend', gestureKick);
+      document.removeEventListener('mousedown', gestureKick);
+      return;
+    }
+    tryPlay();
+  }
+  document.addEventListener('touchend', gestureKick, {passive:true});
+  document.addEventListener('mousedown', gestureKick);
 
   /* ---------- 撕票 ---------- */
   function openInvite(){
